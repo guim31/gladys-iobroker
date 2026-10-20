@@ -1,177 +1,476 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "ioBroker",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Bridge to ioBroker: import its states (lights, shutters, sensors…) into Gladys and control them.",
+    "fr": "Pont vers ioBroker : importez ses états (lampes, volets, capteurs…) dans Gladys et pilotez-les.",
+    "de": "Brücke zu ioBroker: States (Lampen, Rollläden, Sensoren…) in Gladys importieren und steuern.",
+    "es": "Puente a ioBroker: importe sus estados (luces, persianas, sensores…) en Gladys y contrólelos."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-iobroker:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-iobroker/main/cover.png",
+  "categories": ["protocols", "lighting", "climate"],
+  "transports": ["local"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Your ioBroker states in Gladys",
+        "fr": "Vos états ioBroker dans Gladys",
+        "de": "Deine ioBroker-States in Gladys",
+        "es": "Sus estados de ioBroker en Gladys"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "Gladys reads the objects of your ioBroker through its rest-api adapter and follows their changes live. In ioBroker, install the \"REST API\" adapter (rest-api, port 8093) and add an instance. Its devices and channels then show up in the Discovery tab, with their room: add the ones you want.",
+        "fr": "Gladys lit les objets de votre ioBroker par son adaptateur rest-api et suit leurs changements en direct. Dans ioBroker, installez l'adaptateur « REST API » (rest-api, port 8093) et ajoutez une instance. Ses appareils et canaux apparaissent ensuite dans l'onglet Découverte, avec leur pièce : ajoutez ceux que vous voulez.",
+        "de": "Gladys liest die Objekte deines ioBroker über den Adapter rest-api und verfolgt ihre Änderungen live. Installiere in ioBroker den Adapter „REST API“ (rest-api, Port 8093) und lege eine Instanz an. Seine Geräte und Kanäle erscheinen dann im Reiter Entdecken, mit ihrem Raum: Füge die gewünschten hinzu.",
+        "es": "Gladys lee los objetos de su ioBroker mediante su adaptador rest-api y sigue sus cambios en directo. En ioBroker, instale el adaptador «REST API» (rest-api, puerto 8093) y añada una instancia. Sus dispositivos y canales aparecen luego en la pestaña Descubrir, con su habitación: añada los que quiera."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://github.com/ioBroker/ioBroker.rest-api",
+          "label": {
+            "en": "rest-api adapter",
+            "fr": "Adaptateur rest-api",
+            "de": "Adapter rest-api",
+            "es": "Adaptador rest-api"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "url",
+      "type": "string",
+      "label": {
+        "en": "Address of the rest-api adapter",
+        "fr": "Adresse de l'adaptateur rest-api",
+        "de": "Adresse des rest-api-Adapters",
+        "es": "Dirección del adaptador rest-api"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
-    },
-    {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
       "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+        "en": "IP address of ioBroker and port of the adapter (8093), as seen from the Gladys machine. Not a .local name, not localhost.",
+        "fr": "Adresse IP d'ioBroker et port de l'adaptateur (8093), vus depuis la machine de Gladys. Pas de nom en .local, pas localhost.",
+        "de": "IP-Adresse von ioBroker und Port des Adapters (8093), von der Gladys-Maschine aus gesehen. Kein .local-Name, nicht localhost.",
+        "es": "Dirección IP de ioBroker y puerto del adaptador (8093), vistos desde la máquina de Gladys. Sin nombre .local, sin localhost."
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
+      "placeholder": {
+        "en": "http://192.168.1.40:8093",
+        "fr": "http://192.168.1.40:8093",
+        "de": "http://192.168.1.40:8093",
+        "es": "http://192.168.1.40:8093"
+      },
+      "required": true
     },
     {
-      "key": "unit",
-      "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
-      "required": false,
-      "default": "celsius",
-      "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
-      ]
-    },
-    {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "username",
+      "type": "string",
+      "label": {
+        "en": "User name",
+        "fr": "Nom d'utilisateur",
+        "de": "Benutzername",
+        "es": "Nombre de usuario"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Only if \"Authentication\" is ticked in the rest-api instance: an ioBroker user (admin, or a user with fewer rights).",
+        "fr": "Seulement si « Authentification » est cochée dans l'instance rest-api : un utilisateur ioBroker (admin, ou un utilisateur aux droits réduits).",
+        "de": "Nur wenn „Authentifizierung“ in der rest-api-Instanz aktiviert ist: ein ioBroker-Benutzer (admin oder einer mit weniger Rechten).",
+        "es": "Solo si «Autenticación» está marcada en la instancia rest-api: un usuario de ioBroker (admin, o un usuario con menos derechos)."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
+      "default": ""
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "required": false
+    },
+    {
+      "key": "paths",
+      "type": "string",
+      "label": {
+        "en": "Only these ioBroker objects",
+        "fr": "Seulement ces objets ioBroker",
+        "de": "Nur diese ioBroker-Objekte",
+        "es": "Solo estos objetos de ioBroker"
+      },
+      "description": {
+        "en": "Id patterns, separated by commas; * matches any text. Empty: every object. Advised on a large installation.",
+        "fr": "Motifs d'identifiants, séparés par des virgules ; * remplace n'importe quel texte. Vide : tous les objets. Conseillé sur une grosse installation.",
+        "de": "ID-Muster, durch Kommas getrennt; * steht für beliebigen Text. Leer: alle Objekte. Bei großen Installationen empfohlen.",
+        "es": "Patrones de identificadores, separados por comas; * sustituye cualquier texto. Vacío: todos los objetos. Recomendado en una instalación grande."
+      },
+      "placeholder": {
+        "en": "hm-rpc.0.*, shelly.0.*, 0_userdata.0.*",
+        "fr": "hm-rpc.0.*, shelly.0.*, 0_userdata.0.*",
+        "de": "hm-rpc.0.*, shelly.0.*, 0_userdata.0.*",
+        "es": "hm-rpc.0.*, shelly.0.*, 0_userdata.0.*"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "rooms",
+      "type": "string",
+      "label": {
+        "en": "Only the objects of these rooms",
+        "fr": "Seulement les objets de ces pièces",
+        "de": "Nur die Objekte dieser Räume",
+        "es": "Solo los objetos de estas habitaciones"
+      },
+      "description": {
+        "en": "Rooms of ioBroker (enum.rooms), by name or id, separated by commas. Empty: every object, in a room or not.",
+        "fr": "Pièces d'ioBroker (enum.rooms), par nom ou identifiant, séparées par des virgules. Vide : tous les objets, dans une pièce ou non.",
+        "de": "Räume von ioBroker (enum.rooms), nach Name oder ID, durch Kommas getrennt. Leer: alle Objekte, mit oder ohne Raum.",
+        "es": "Habitaciones de ioBroker (enum.rooms), por nombre o identificador, separadas por comas. Vacío: todos los objetos, en una habitación o no."
+      },
+      "placeholder": {
+        "en": "Living room, Kitchen",
+        "fr": "Living room, Kitchen",
+        "de": "Living room, Kitchen",
+        "es": "Living room, Kitchen"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "exclude_states",
+      "type": "string",
+      "label": {
+        "en": "States to leave out",
+        "fr": "États à écarter",
+        "de": "Auszulassende States",
+        "es": "Estados a excluir"
+      },
+      "description": {
+        "en": "State ids, separated by commas; * matches any text. Never imported.",
+        "fr": "Identifiants d'états, séparés par des virgules ; * remplace n'importe quel texte. Jamais importés.",
+        "de": "State-IDs, durch Kommas getrennt; * steht für beliebigen Text. Nie importiert.",
+        "es": "Identificadores de estados, separados por comas; * sustituye cualquier texto. Nunca se importan."
+      },
+      "placeholder": {
+        "en": "*.RSSI_*, *.UNREACH",
+        "fr": "*.RSSI_*, *.UNREACH",
+        "de": "*.RSSI_*, *.UNREACH",
+        "es": "*.RSSI_*, *.UNREACH"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "allow_security_commands",
+      "type": "boolean",
+      "label": {
+        "en": "Allow commands of locks, gates, garage doors and alarms",
+        "fr": "Autoriser serrures, portails, portes de garage et alarmes",
+        "de": "Befehle für Schlösser, Tore, Garagentore und Alarmanlagen erlauben",
+        "es": "Permitir comandos de cerraduras, portones, puertas de garaje y alarmas"
+      },
+      "description": {
+        "en": "Off: they show their state, but Gladys cannot open, unlock or disarm them, from a device, a scene or a voice assistant.",
+        "fr": "Désactivé : ils affichent leur état, mais Gladys ne peut ni les ouvrir, ni les déverrouiller, ni les désarmer, depuis un appareil, une scène ou un assistant vocal.",
+        "de": "Aus: Der Zustand wird angezeigt, aber Gladys kann nichts öffnen, entriegeln oder unscharf schalten, weder über Gerät noch Szene oder Sprachassistent.",
+        "es": "Desactivado: muestran su estado, pero Gladys no puede abrirlos, desbloquearlos ni desarmarlos, desde un dispositivo, una escena o un asistente de voz."
+      },
+      "required": false,
+      "default": false
+    },
+    {
+      "key": "sensor_interval",
+      "type": "number",
+      "label": {
+        "en": "Minimum interval between two values of a sensor (s)",
+        "fr": "Intervalle minimum entre deux valeurs d'un capteur (s)",
+        "de": "Mindestabstand zwischen zwei Werten eines Sensors (s)",
+        "es": "Intervalo mínimo entre dos valores de un sensor (s)"
+      },
+      "description": {
+        "en": "A power meter that reports every second is sent to Gladys at this pace. Switches and detectors are never delayed.",
+        "fr": "Un compteur qui publie chaque seconde est transmis à Gladys à ce rythme. Interrupteurs et détecteurs ne sont jamais retardés.",
+        "de": "Ein Zähler, der jede Sekunde meldet, wird in diesem Takt an Gladys gesendet. Schalter und Melder werden nie verzögert.",
+        "es": "Un contador que informa cada segundo se envía a Gladys a este ritmo. Interruptores y detectores nunca se retrasan."
+      },
+      "required": false,
+      "default": 10,
+      "min": 0,
       "max": 3600
+    },
+    {
+      "key": "events",
+      "type": "section",
+      "label": {
+        "en": "Scenes",
+        "fr": "Scènes",
+        "de": "Szenen",
+        "es": "Escenas"
+      },
+      "description": {
+        "en": "States listed here start the scene trigger \"ioBroker state changed\" at each change of value, even when they are not added to Gladys (a text, a script variable, an alarm mode…).",
+        "fr": "Les états listés ici déclenchent le déclencheur de scène « État ioBroker modifié » à chaque changement de valeur, même s'ils ne sont pas ajoutés à Gladys (un texte, une variable de script, un mode d'alarme…).",
+        "de": "Hier aufgeführte States lösen bei jeder Wertänderung den Szenen-Auslöser „ioBroker-State geändert“ aus, auch wenn sie nicht zu Gladys hinzugefügt sind (ein Text, eine Skriptvariable, ein Alarmmodus…).",
+        "es": "Los estados indicados aquí activan el disparador de escena «Estado de ioBroker modificado» en cada cambio de valor, aunque no estén añadidos a Gladys (un texto, una variable de script, un modo de alarma…)."
+      }
+    },
+    {
+      "key": "watched_states",
+      "type": "string",
+      "label": {
+        "en": "States watched for the scenes",
+        "fr": "États surveillés pour les scènes",
+        "de": "Für Szenen beobachtete States",
+        "es": "Estados vigilados para las escenas"
+      },
+      "description": {
+        "en": "State ids, separated by commas; * matches any text.",
+        "fr": "Identifiants d'états, séparés par des virgules ; * remplace n'importe quel texte.",
+        "de": "State-IDs, durch Kommas getrennt; * steht für beliebigen Text.",
+        "es": "Identificadores de estados, separados por comas; * sustituye cualquier texto."
+      },
+      "placeholder": {
+        "en": "0_userdata.0.alarm_mode, 0_userdata.0.doorbell*",
+        "fr": "0_userdata.0.alarm_mode, 0_userdata.0.doorbell*",
+        "de": "0_userdata.0.alarm_mode, 0_userdata.0.doorbell*",
+        "es": "0_userdata.0.alarm_mode, 0_userdata.0.doorbell*"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of the feature names",
+        "fr": "Langue des noms de fonctionnalités",
+        "de": "Sprache der Funktionsnamen",
+        "es": "Idioma de los nombres de funciones"
+      },
+      "required": false,
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
       "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "state_changed",
+      "label": {
+        "en": "ioBroker state changed",
+        "fr": "État ioBroker modifié",
+        "de": "ioBroker-State geändert",
+        "es": "Estado de ioBroker modificado"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "A watched state (configuration) changed value in ioBroker.",
+        "fr": "Un état surveillé (configuration) a changé de valeur dans ioBroker.",
+        "de": "Ein beobachteter State (Konfiguration) hat in ioBroker seinen Wert geändert.",
+        "es": "Un estado vigilado (configuración) cambió de valor en ioBroker."
       },
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "key": "id",
+          "type": "string",
+          "label": {
+            "en": "State id",
+            "fr": "Identifiant de l'état",
+            "de": "State-ID",
+            "es": "Identificador del estado"
+          },
+          "placeholder": {
+            "en": "0_userdata.0.alarm_mode",
+            "fr": "0_userdata.0.alarm_mode",
+            "de": "0_userdata.0.alarm_mode",
+            "es": "0_userdata.0.alarm_mode"
+          }
         },
         {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "key": "value",
+          "type": "string",
+          "label": {
+            "en": "New value (optional)",
+            "fr": "Nouvelle valeur (facultatif)",
+            "de": "Neuer Wert (optional)",
+            "es": "Nuevo valor (opcional)"
+          },
+          "placeholder": {
+            "en": "true",
+            "fr": "true",
+            "de": "true",
+            "es": "true"
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "id",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "State id",
+            "fr": "Identifiant de l'état",
+            "de": "State-ID",
+            "es": "Identificador del estado"
+          }
+        },
+        {
+          "key": "name",
+          "type": "string",
+          "label": {
+            "en": "Name",
+            "fr": "Nom",
+            "de": "Name",
+            "es": "Nombre"
+          }
+        },
+        {
+          "key": "value",
+          "type": "string",
+          "label": {
+            "en": "New value",
+            "fr": "Nouvelle valeur",
+            "de": "Neuer Wert",
+            "es": "Nuevo valor"
+          }
+        },
+        {
+          "key": "old_value",
+          "type": "string",
+          "label": {
+            "en": "Previous value",
+            "fr": "Valeur précédente",
+            "de": "Vorheriger Wert",
+            "es": "Valor anterior"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "set_state",
+      "label": {
+        "en": "Set an ioBroker state",
+        "fr": "Écrire un état ioBroker",
+        "de": "ioBroker-State setzen",
+        "es": "Escribir un estado de ioBroker"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Writes a value to any state, even one not added to Gladys: true, false, 50, a text…",
+        "fr": "Écrit une valeur dans n'importe quel état, même non ajouté à Gladys : true, false, 50, un texte…",
+        "de": "Schreibt einen Wert in einen beliebigen State, auch einen nicht hinzugefügten: true, false, 50, ein Text…",
+        "es": "Escribe un valor en cualquier estado, aunque no esté añadido a Gladys: true, false, 50, un texto…"
+      },
+      "timeout_seconds": 30,
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
+          "key": "state",
+          "type": "string",
+          "label": {
+            "en": "State id",
+            "fr": "Identifiant de l'état",
+            "de": "State-ID",
+            "es": "Identificador del estado"
+          },
+          "placeholder": {
+            "en": "0_userdata.0.good_night",
+            "fr": "0_userdata.0.good_night",
+            "de": "0_userdata.0.good_night",
+            "es": "0_userdata.0.good_night"
+          },
           "required": true
-        }
-      ],
-      "outputs": [
+        },
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "value",
+          "type": "string",
+          "label": {
+            "en": "Value",
+            "fr": "Valeur",
+            "de": "Wert",
+            "es": "Valor"
+          },
+          "placeholder": {
+            "en": "true",
+            "fr": "true",
+            "de": "true",
+            "es": "true"
+          },
+          "required": true
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "status",
+      "label": {
+        "en": "ioBroker",
+        "fr": "ioBroker",
+        "de": "ioBroker",
+        "es": "ioBroker"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Connection to ioBroker, live updates, devices added and states followed.",
+        "fr": "Connexion à ioBroker, mises à jour en direct, appareils ajoutés et états suivis.",
+        "de": "Verbindung zu ioBroker, Live-Aktualisierung, hinzugefügte Geräte und verfolgte States.",
+        "es": "Conexión a ioBroker, actualizaciones en directo, dispositivos añadidos y estados seguidos."
+      },
+      "icon": "home",
+      "action_timeout_seconds": 30
     }
   ]
 }

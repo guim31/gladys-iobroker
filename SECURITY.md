@@ -28,8 +28,15 @@ Gladys before reporting a problem.
 
 ## Scope
 
-In scope: the code of this repository and the Docker image it publishes.
+In scope: the code of this repository and the Docker image it publishes. The
+integration stores nothing in `/data`: its configuration (the address of the
+rest-api adapter, the optional ioBroker user name and password) is kept by
+Gladys and given to the container at start-up. It only talks to the rest-api
+adapter configured, on the local network, over HTTP or HTTPS; the password is
+never written to the logs, and an address holding credentials is refused.
+Commands of locks, gates, garage doors and alarms are refused unless the user
+allows them, from devices and scenes alike.
 
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+and ioBroker, its adapters and the devices they talk to.

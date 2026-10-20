@@ -1,8 +1,8 @@
 {
-  "name": "gladys-integration-template-js",
+  "name": "gladys-iobroker",
   "version": "1.0.0",
   "private": true,
-  "description": "Official starter template to build an external integration for Gladys Assistant with the JavaScript SDK.",
+  "description": "Gladys Assistant external integration bridging ioBroker: import its states into Gladys and control them through the rest-api adapter.",
   "type": "module",
   "main": "index.js",
   "scripts": {
