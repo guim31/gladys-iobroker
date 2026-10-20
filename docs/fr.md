@@ -90,7 +90,7 @@ est ajoutée à son nom. Les fonctionnalités viennent du **rôle** de chaque é
 
 Un état n'est pilotable que si son objet indique `write: true`. Les commandes partent comme depuis
 l'interface d'ioBroker (`ack: false`) : l'adaptateur de l'appareil les exécute, et la valeur qu'il
-confirme s'affiche dans Gladys. Seuls les états des appareils ajoutés à Gladys sont suivis.
+confirme s'affiche dans Gladys. Seuls les états des appareils ajoutés à Gladys sont suivis. Les états de `0_userdata` et `javascript`, qu'aucun adaptateur ne confirme, s'affichent dès qu'ils sont écrits. Les motifs d'identifiants respectent la casse, comme les identifiants d'ioBroker.
 
 ### Widget du tableau de bord
 

@@ -87,7 +87,7 @@ si la tiene, se añade a su nombre. Las funciones vienen del **rol** de cada est
 
 Un estado solo es controlable si su objeto indica `write: true`. Los comandos se envían como desde la
 interfaz de ioBroker (`ack: false`): el adaptador del dispositivo los ejecuta, y el valor que confirma
-se muestra en Gladys. Solo se siguen los estados de los dispositivos añadidos a Gladys.
+se muestra en Gladys. Solo se siguen los estados de los dispositivos añadidos a Gladys. Los estados de `0_userdata` y `javascript`, que ningún adaptador confirma, se muestran en cuanto se escriben. Los patrones de identificadores distinguen mayúsculas y minúsculas, como los identificadores de ioBroker.
 
 ### Widget del panel
 

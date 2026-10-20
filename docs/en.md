@@ -86,7 +86,7 @@ added to its name. The features come from the **role** of each state:
 
 A state is controllable only when its object says `write: true`. Commands are sent like the ioBroker
 interface does (`ack: false`): the adapter of the device carries them out, and the value it confirms is
-shown in Gladys. Only the states of the devices added to Gladys are followed.
+shown in Gladys. Only the states of the devices added to Gladys are followed. The states of `0_userdata` and `javascript`, which no adapter confirms, are shown as soon as they are written. Id patterns are case-sensitive, like ioBroker ids.
 
 ### Dashboard widget
 

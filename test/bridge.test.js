@@ -238,3 +238,94 @@ test('a normal cycle writes nothing at the info level', async (t) => {
   assert.deepEqual(stop(), []);
   assert.equal(lines.length, 0);
 });
+
+test('security: a gate named on its channel or its device, in any language, stays read-only', async (t) => {
+  const iob = createIobroker();
+  const relay = (name) => ({
+    type: 'state',
+    common: { name, type: 'boolean', role: 'switch', read: true, write: true },
+    native: {},
+  });
+  iob.setObject('shelly.0.SHSW-1#A1#1', { type: 'device', common: { name: 'Shelly 1' } });
+  iob.setObject('shelly.0.SHSW-1#A1#1.Relay0', { type: 'channel', common: { name: 'Portail' } });
+  iob.setObject('shelly.0.SHSW-1#A1#1.Relay0.Switch', relay('Switch'));
+  iob.setObject('shelly.0.SHSW-1#B2#1', {
+    type: 'device',
+    common: { name: { en: 'Relay', de: 'Garagentor' } },
+  });
+  iob.setObject('shelly.0.SHSW-1#B2#1.Relay0', { type: 'channel', common: { name: 'Relay0' } });
+  iob.setObject('shelly.0.SHSW-1#B2#1.Relay0.Switch', relay('Switch'));
+  // Outside the configured patterns: its parents are read from ioBroker.
+  const world = await createWorld({
+    iob,
+    config: baseConfig({ paths: '0_userdata.0.*, shelly.0.SHSW-1#A1#1.Relay0.*' }),
+  });
+  t.after(() => world.app.stop());
+  const gate = 'shelly.0.SHSW-1#A1#1.Relay0.Switch';
+  assert.equal(featureOf(world, gate, 'state').read_only, true);
+  assert.match(
+    deviceOf(world, gate).external_id,
+    /:object:shelly\.0\.SHSW-1#A1#1$/,
+    'the device, whatever the patterns',
+  );
+  for (const state of [gate, 'shelly.0.SHSW-1#B2#1.Relay0.Switch']) {
+    const ack = await world.fake.sceneAction('set_state', { state, value: 'true' });
+    assert.equal(ack.success, false, state);
+  }
+  assert.equal(iob.commands.length, 0);
+});
+
+test('a command not yet acknowledged by its adapter is not shown; user data is', async (t) => {
+  const iob = createIobroker({ autoAck: false });
+  const world = await createWorld({ iob });
+  t.after(() => world.app.stop());
+  const bulb = await addDevice(world, deviceOf(world, `${BULB}.brightness`));
+  const plug = await addDevice(world, deviceOf(world, '0_userdata.0.plug'));
+  await until(() => world.bridge.stream?.patterns.length === 2, { what: 'subscriptions' });
+  await flushed(world);
+  const brightness = featureOf(world, `${BULB}.brightness`, 'brightness');
+  await world.fake.setValue(bulb, brightness, 35);
+  const switchFeature = featureOf(world, '0_userdata.0.plug', 'state');
+  await world.fake.setValue(plug, switchFeature, 0);
+  await until(
+    async () => (await flushed(world), statesOf(world, switchFeature.external_id).at(-1) === 0),
+    {
+      what: 'the user data value',
+    },
+  );
+  await world.bridge.resync();
+  await flushed(world);
+  assert.ok(!statesOf(world, brightness.external_id).includes(35), 'ack: false is a command');
+  iob.change(`${BULB}.brightness`, 35, true);
+  await until(
+    async () => (await flushed(world), statesOf(world, brightness.external_id).includes(35)),
+    {
+      what: 'the acknowledged value',
+    },
+  );
+});
+
+test('devices added while a session opens are followed by the next one', async (t) => {
+  const world = await createWorld();
+  t.after(() => world.app.stop());
+  const first = addDevice(world, deviceOf(world, WINDOW));
+  const second = addDevice(world, deviceOf(world, '0_userdata.0.plug'));
+  await Promise.all([first, second]);
+  await until(
+    () =>
+      JSON.stringify(world.bridge.stream?.patterns) ===
+      JSON.stringify(['0_userdata.0.plug', 'zigbee.0.00158d0003d4e5f6.*']),
+    { what: 'both devices followed' },
+  );
+});
+
+test('the watchdog sees a lost session even with nothing followed', async (t) => {
+  const world = await createWorld();
+  t.after(() => world.app.stop());
+  const before = world.bridge.stream;
+  world.iob.restart();
+  await world.bridge.tick(world.bridge.generation);
+  await until(() => world.bridge.stream && world.bridge.stream !== before, {
+    what: 'a new session',
+  });
+});

@@ -271,3 +271,11 @@ zigbee reproduits, sans matériel). Fixture : `test/fixtures/iobroker/objects.js
   tirés des ids ioBroker ; états de `system.*` et des canaux `<adaptateur>.<n>.info` jamais importés ; textes non
   importés (déclencheur et action de scène pour eux) ; serrures, portails, portes de garage et alarmes (par rôle,
   et par nom pour les simples relais) en lecture seule sauf option, y compris par l'action de scène.
+- Relecture indépendante du 20/10 (corrigée) : la sécurité teste l'état **et tous ses ancêtres** (canaux, device, noms
+  dans toutes les langues), relus par `GET /v1/object` pour l'action de scène ; les canaux et devices sont lus par
+  instance d'adaptateur (`hm-rpc.1.*`) quels que soient les motifs, sinon l'identifiant externe changerait avec
+  `paths` ; une valeur `ack: false` (commande pas encore exécutée) n'est jamais publiée, sauf sous `0_userdata` et
+  `javascript` qu'aucun adaptateur n'acquitte ; motifs sensibles à la casse comme rest-api ; chaque session s'abonne
+  aussi à `system.gladys-bridge-watchdog` (ne correspond à rien) pour que le chien de garde voie une session perdue
+  même sans état suivi. Une session abandonnée (remplacée) est détruite par le ramasse-miettes de rest-api après
+  1,5 × timeout sans requête : pas de désabonnement explicite.

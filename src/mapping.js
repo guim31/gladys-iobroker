@@ -250,21 +250,27 @@ const SECURITY_ROLE =
 const SECURITY_WORDS =
   /(^|[^a-zà-ÿ])(lock|locks|garage|gate|portail|serrure|verrou|schloss|garagentor|tür(öffner)?|tor|cerradura|portón|alarm|alarme|alarma)([^a-zà-ÿ]|$)/i;
 
+/** Every text of a name: a string, or each of its translations. */
+const allTexts = (name) =>
+  typeof name === 'string'
+    ? [name]
+    : name && typeof name === 'object'
+      ? Object.values(name).filter((v) => typeof v === 'string')
+      : [];
+
 /**
- * True for the states whose commands are a security choice.
+ * True for the states whose commands are a security choice: the state, or
+ * any channel or device above it, has a security role, id or name (in any
+ * language). The devices and the scene action use this same test.
  * @param {object} obj the state object
- * @param {object} [holder] its channel or device object
+ * @param {object | object[]} [ancestors] the channels and devices above it
  */
-export function isSecurityState(obj, holder) {
-  if (SECURITY_ROLE.test(roleOf(obj)) || (holder && SECURITY_ROLE.test(roleOf(holder)))) {
+export function isSecurityState(obj, ancestors = []) {
+  const all = [obj, ...(Array.isArray(ancestors) ? ancestors : [ancestors])].filter(Boolean);
+  if (all.some((o) => SECURITY_ROLE.test(roleOf(o)))) {
     return true;
   }
-  const texts = [
-    obj?._id,
-    pickText(obj?.common?.name),
-    holder?._id,
-    pickText(holder?.common?.name),
-  ];
+  const texts = all.flatMap((o) => [o._id, ...allTexts(o.common?.name)]);
   return texts.some((t) => SECURITY_WORDS.test(String(t ?? '').replace(/[._]/g, ' ')));
 }
 

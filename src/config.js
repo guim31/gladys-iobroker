@@ -81,14 +81,15 @@ export function splitList(raw) {
 }
 
 /**
- * A state id pattern: `0_userdata.0.lamp`, `hm-rpc.0.*`, `*.LOWBAT`. ioBroker
- * ids are case-sensitive, the patterns are not: a user rarely remembers the case.
+ * A state id pattern: `0_userdata.0.lamp`, `hm-rpc.0.*`, `*.LOWBAT`.
+ * Case-sensitive, like ioBroker: a pattern matches here exactly what rest-api
+ * subscribes to, nothing more.
  * @param {string} pattern
  * @returns {RegExp}
  */
 export function patternToRegExp(pattern) {
   const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*');
-  return new RegExp(`^${escaped}$`, 'i');
+  return new RegExp(`^${escaped}$`);
 }
 
 /** @param {string[]} patterns */

@@ -66,7 +66,7 @@ test('client: basic authentication, typed errors, bulk reading', async () => {
   await assert.rejects(client.getVersion(), /ECONNREFUSED/);
 });
 
-test('client: long polling delivers the events, one per answer, and closes', async () => {
+test('client: long polling delivers the events, one per answer, and closes', async (t) => {
   const iob = createIobroker({ pollTimeout: 20 });
   const client = new IobrokerClient({ baseUrl: 'http://192.0.2.10:8093', fetch: iob.fetch });
   const events = [];
@@ -74,7 +74,9 @@ test('client: long polling delivers the events, one per answer, and closes', asy
     patterns: ['0_userdata.0.*'],
     onEvent: (event) => events.push(event),
   });
-  assert.equal(await stream.subscriptions(), 1);
+  t.after(() => stream.close());
+  assert.equal(stream.expected, 2, 'the pattern and the watchdog');
+  assert.equal(await stream.subscriptions(), 2);
   iob.change('0_userdata.0.plug', true);
   iob.change('0_userdata.0.plug', false);
   iob.change('hm-rpc.1.00021B3C4D5E6F.3.STATE', true);

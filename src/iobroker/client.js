@@ -54,6 +54,9 @@ export function authorization({ username, password }) {
     : undefined;
 }
 
+/** Subscribed by every session, matches no state (see openEvents). */
+export const WATCHDOG_PATTERN = 'system.gladys-bridge-watchdog';
+
 /** States read per request: a POST body stays small. */
 const STATES_PER_REQUEST = 500;
 
@@ -198,6 +201,9 @@ export class IobrokerClient {
         body: { method: 'polling', pattern },
       });
     await subscribe('objects', '*');
+    // A pattern that never fires: with no state followed, the watchdog still
+    // sees a session recreated empty by rest-api after a restart.
+    await subscribe('states', WATCHDOG_PATTERN);
     for (const pattern of patterns) {
       await subscribe('states', pattern);
     }
@@ -236,6 +242,8 @@ export class IobrokerClient {
     return {
       sid,
       patterns,
+      /** Subscriptions rest-api must keep for this session. */
+      expected: patterns.length + 1,
       done,
       /** Number of state subscriptions rest-api keeps for this session, or -1 when it lost it. */
       subscriptions: async () => {

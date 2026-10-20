@@ -89,7 +89,7 @@ den Namen angehängt. Die Funktionen ergeben sich aus der **Rolle** jedes States
 
 Ein State ist nur steuerbar, wenn sein Objekt `write: true` angibt. Befehle werden wie in der
 ioBroker-Oberfläche gesendet (`ack: false`): Der Adapter des Geräts führt sie aus, und der Wert, den er
-bestätigt, erscheint in Gladys. Nur die States der zu Gladys hinzugefügten Geräte werden verfolgt.
+bestätigt, erscheint in Gladys. Nur die States der zu Gladys hinzugefügten Geräte werden verfolgt. Die States von `0_userdata` und `javascript`, die kein Adapter bestätigt, erscheinen, sobald sie geschrieben sind. ID-Muster unterscheiden Groß- und Kleinschreibung, wie die IDs von ioBroker.
 
 ### Dashboard-Widget
 

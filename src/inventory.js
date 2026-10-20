@@ -51,6 +51,19 @@ function roomKeys(obj) {
   return keys;
 }
 
+/** Every channel and device above a state id, nearest first. */
+export function ancestorsOf(id, parents) {
+  const parts = String(id).split('.');
+  const found = [];
+  for (let i = parts.length - 1; i >= 2; i -= 1) {
+    const parent = parents[parts.slice(0, i).join('.')];
+    if (parent?.type === 'device' || parent?.type === 'channel') {
+      found.push(parent);
+    }
+  }
+  return found;
+}
+
 /**
  * The name of a state, without the device name some adapters put in front
  * (hm-rpc: "Bedroom shutter:4.LEVEL" -> "4.LEVEL").
@@ -127,7 +140,7 @@ export function buildInventory(objects, options) {
       continue;
     }
     const holder = holderOf(id);
-    const secure = isSecurityState(obj, holder);
+    const secure = isSecurityState(obj, ancestorsOf(id, parents));
     if (secure) {
       security.add(id);
     }

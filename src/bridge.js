@@ -58,6 +58,14 @@ export const EVENTS_PER_MINUTE = 120;
 /** The core refuses a discovered list longer than this (setDiscoveredDevices, 5.2.0). */
 export const MAX_DISCOVERED_DEVICES = 2000;
 
+/**
+ * States no adapter acknowledges (user data, script variables): their value
+ * counts as soon as it is written. Elsewhere `ack: false` is a command not yet
+ * carried out, never shown as the state of the device.
+ */
+const UNACKNOWLEDGED = /^(0_userdata|javascript)\./;
+const confirmed = (id, state) => state.ack !== false || UNACKNOWLEDGED.test(id);
+
 /** Ids allowed in a scene action: what ioBroker accepts, without wildcards. */
 const STATE_ID = /^[^\s*?"'`\\[\],]+(?:[ ][^\s*?"'`\\[\],]+)*$/;
 
@@ -108,7 +116,7 @@ export class Bridge {
     this.status = 'not_configured';
     this.version = undefined;
     this.client = undefined;
-    this.objects = { states: {}, parents: {} };
+    this.objects = { states: {}, parents: {}, instances: [] };
     /** state id -> its value (`val`), kept up to date by the events */
     this.values = new Map();
     /** state id -> time of its last change received by long polling */
@@ -133,6 +141,7 @@ export class Bridge {
     this.eventWindow = [];
     this.eventsDropped = false;
     this.watched = matcher([]);
+    this.selected = matcher([]);
   }
 
   emptyInventory() {
@@ -150,6 +159,7 @@ export class Bridge {
     this.configKey = key;
     this.config = normalizeConfig(raw);
     this.watched = matcher(this.config.watched);
+    this.selected = matcher(this.config.paths);
     this.publisher.setInterval(this.config.sensorInterval);
     await this.restart();
   }
@@ -161,7 +171,7 @@ export class Bridge {
     this.streamDelay = this.timings.reconnectMin;
     this.structure = undefined;
     // Nothing of the previous server survives a new configuration.
-    this.objects = { states: {}, parents: {} };
+    this.objects = { states: {}, parents: {}, instances: [] };
     this.values.clear();
     this.changedAt.clear();
     this.transports.clear();
@@ -228,22 +238,31 @@ export class Bridge {
     });
   }
 
-  /** The objects of the configured patterns: states, and the channels and devices above them. */
+  /**
+   * The states of the configured patterns, and every channel and device of
+   * their adapter instances: the device a state belongs to (its external id)
+   * never depends on the patterns.
+   */
   async readObjects(client) {
     const patterns = this.config.paths.length > 0 ? this.config.paths : ['*'];
     const states = {};
     const parents = {};
     for (const pattern of patterns) {
       Object.assign(states, await client.getObjects(pattern, 'state'));
-      Object.assign(parents, await client.getObjects(pattern, 'channel'));
-      Object.assign(parents, await client.getObjects(pattern, 'device'));
+    }
+    const instances = patterns.includes('*')
+      ? ['*']
+      : [...new Set(Object.keys(states).map((id) => `${id.split('.').slice(0, 2).join('.')}.*`))];
+    for (const instance of instances) {
+      Object.assign(parents, await client.getObjects(instance, 'channel'));
+      Object.assign(parents, await client.getObjects(instance, 'device'));
     }
     for (const [id, obj] of [...Object.entries(states), ...Object.entries(parents)]) {
       if (obj && typeof obj === 'object') {
         obj._id = id;
       }
     }
-    return { states, parents };
+    return { states, parents, instances };
   }
 
   async connect(generation) {
@@ -273,6 +292,9 @@ export class Bridge {
     this.status = 'online';
     this.delay = this.timings.reconnectMin;
     await this.applyObjects(objects, { force: true });
+    if (generation !== this.generation) {
+      return;
+    }
     this.logger.info(
       `${wasDown ? 'Connected again' : 'Connected'} to ioBroker ${this.version ?? ''}: ${this.inventory.devices.length} devices, ${this.inventory.stateCount} states`.replace(
         '  ',
@@ -281,13 +303,18 @@ export class Bridge {
     );
     await this.setConnectionStatus(true);
     await this.publishTransports();
+    if (generation !== this.generation) {
+      return;
+    }
     this.requestWidgetRefresh();
     this.timers.clearInterval(this.tickTimer);
     this.tickTimer = this.timers.setInterval(() => {
       this.tick(generation).catch((err) => this.logger.debug(`Tick failed: ${err.message}`));
     }, this.timings.pollInterval);
     await this.resync(generation);
-    this.openStream(generation);
+    if (generation === this.generation) {
+      this.openStream(generation);
+    }
   }
 
   async onFailure(generation, err) {
@@ -371,6 +398,8 @@ export class Bridge {
     this.stream = stream;
     this.live = true;
     this.streamDelay = this.timings.reconnectMin;
+    // A device added or removed while the session was opening.
+    this.scheduleResubscribe();
     if (this.streamFailing) {
       this.streamFailing = false;
       this.logger.info('ioBroker long polling works again');
@@ -442,14 +471,20 @@ export class Bridge {
       this.onStateChanged(id, event.state);
       return;
     }
-    if (!isSystemState(id)) {
-      // An object created, changed or deleted.
+    // An object created, changed or deleted: only the ones the inventory reads.
+    const type = event.obj?.type;
+    if (isSystemState(id) || (type && !['state', 'channel', 'device'].includes(type))) {
+      return;
+    }
+    const instances = this.objects.instances ?? ['*'];
+    const instance = `${id.split('.').slice(0, 2).join('.')}.*`;
+    if (instances.includes('*') || instances.includes(instance) || this.selected(id)) {
       this.scheduleInventory();
     }
   }
 
   onStateChanged(id, state) {
-    if (!state || typeof state !== 'object') {
+    if (!state || typeof state !== 'object' || !confirmed(id, state)) {
       return;
     }
     const known = this.values.has(id);
@@ -487,7 +522,7 @@ export class Bridge {
       } catch {
         count = undefined;
       }
-      if (count !== undefined && count < stream.patterns.length && stream === this.stream) {
+      if (count !== undefined && count < stream.expected && stream === this.stream) {
         this.logger.debug('rest-api lost the long polling session (restarted?): opened again');
         this.replaceStream(generation);
         return;
@@ -586,7 +621,7 @@ export class Bridge {
     for (const [id, state] of states) {
       const changed = this.changedAt.get(id);
       // A change received while the states were read is newer: it is kept.
-      if (changed !== undefined && changed >= started) {
+      if ((changed !== undefined && changed >= started) || !confirmed(id, state)) {
         continue;
       }
       const known = this.values.has(id);
@@ -842,12 +877,7 @@ export class Bridge {
     if (obj?.type !== 'state') {
       throw this.error('not_found', id);
     }
-    const parents = this.objects.parents;
-    const holder = Object.keys(parents)
-      .filter((p) => id.startsWith(`${p}.`))
-      .sort((a, b) => b.length - a.length)
-      .map((p) => parents[p])[0];
-    if (!this.config.allowSecurity && isSecurityState(obj, holder)) {
+    if (!this.config.allowSecurity && isSecurityState(obj, await this.ancestors(id))) {
       throw this.error('security_disabled');
     }
     if (obj.common?.write === false) {
@@ -867,6 +897,29 @@ export class Bridge {
     }
     this.logger.info(`Scene action: ${short(val, 40)} to ${id}`);
     await this.writeState(id, val);
+  }
+
+  /** The channels and devices above a state, read from ioBroker when not known. */
+  async ancestors(id) {
+    const parts = id.split('.');
+    const found = [];
+    for (let i = parts.length - 1; i >= 2; i -= 1) {
+      const parentId = parts.slice(0, i).join('.');
+      let parent = this.objects.parents[parentId];
+      if (!parent) {
+        try {
+          parent = await this.client.getObject(parentId);
+        } catch (err) {
+          if (!(err instanceof IobHttpError && err.status === 404)) {
+            throw this.translate(err, id);
+          }
+        }
+      }
+      if (parent && typeof parent === 'object') {
+        found.push({ ...parent, _id: parentId });
+      }
+    }
+    return found;
   }
 
   // --- Scene events --------------------------------------------------------------
