@@ -16,8 +16,8 @@ its only runtime dependency. It started from the official JavaScript template.
 ```bash
 npm install
 npm test                                  # node --test, the built-in runner
-node --test test/devices.test.js          # one file
-node --test --test-name-pattern "plug"    # tests whose name matches
+node --test test/bridge.test.js           # one file
+node --test --test-name-pattern "lock"    # tests whose name matches
 npm run lint                              # ESLint
 npm run format:check                      # Prettier, as the CI runs it
 npm run format                            # Prettier, fix in place
@@ -32,15 +32,20 @@ pushing.
 
 ```
 index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/app.js                        every handler of the manifest, on the bridge
+src/bridge.js                     the ioBroker connection: objects, long polling, resync, commands
+src/iobroker/client.js            rest-api adapter (fetch): objects, bulk states, PATCH, long polling
+src/inventory.js                  objects -> Gladys devices (device > channel > state), routing tables (pure)
+src/mapping.js                    one state -> its features by role and unit: read, write (pure)
+src/publisher.js                  states sent to Gladys within 250 per minute, 12 h heartbeat
+src/scenes.js                     scene action set_state (the security guard is in the bridge)
+src/widgets.js                    dashboard widget `status`
+src/texts.js                      every text of the container, in four languages
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (en and fr mandatory)
+test/                             node --test, against the SDK's fake Gladys and a fake rest-api
+test/fixtures/iobroker/           objects and values of a real ioBroker (js-controller 7.2.5, rest-api 4.0.3)
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +75,9 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** is in four languages (English, French, German with
+  "du", Spanish with "usted"): action messages, manifest texts, feature names,
+  widget, and `docs/{en,fr,de,es}.md` with the same sections.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +239,43 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## ioBroker (propre à cette intégration)
+
+Vérifié contre `buanet/iobroker:latest` (js-controller 7.2.5) en Docker, adaptateurs `rest-api` 4.0.3 et `simple-api`
+installés par `iob add`, objets créés par `POST /v1/object/<id>` (structure et rôles des adaptateurs hm-rpc, shelly,
+zigbee reproduits, sans matériel). Fixture : `test/fixtures/iobroker/objects.json`.
+
+- **Choix de l'API** : `rest-api` (8093) plutôt que `simple-api` (8087), qui n'a aucune notification. `rest-api`
+  liste les objets par type (`GET /v1/objects?filter=*&type=state`, `type` vaut `state` par défaut) **avec leurs
+  enums, hérités du canal et de l'appareil** (`enums: { "enum.rooms.x": nom }`), lit en masse
+  (`POST /v1/command/getStates` avec `{ pattern: [ids] }` ; `GET` avec un tableau en chaîne → 500), écrit par
+  `PATCH /v1/state/<id>` `{ val, ack: false }`. Un état sans valeur répond `{ id }` seul. Id inconnu : 404
+  `{ error: 'ID not found' }`.
+- **Authentification** : désactivée par défaut ; cochée, basic avec un utilisateur ioBroker. Sans en-tête : 401
+  `{ error: 'User is required' }` ; mauvais mot de passe : 401 texte `Unauthorized`.
+- **Long polling** (`GET /v1/polling?sid=…`) : `&connect&timeout=N` répond `_` en texte ; ensuite **un événement par
+  réponse** (`{ id, state }`, `{ id, obj }`, `{ id }` pour un objet supprimé), réponse **vide** après `timeout`
+  (1 à 60 s). Un événement en attente depuis plus de **3 s** est jeté : relancer la requête aussitôt, et relire les
+  états suivis de temps en temps (5 min ici). S'abonner par `POST /v1/states/subscribe?sid=…&method=polling`
+  `{ method: 'polling', pattern }` : **un motif par requête** (un tableau répond OK mais ne délivre rien).
+  `GET /v1/states/subscribe?sid=…&method=polling` liste les abonnements (`{ states: [...] }`, 404 sans session).
+  **Au redémarrage de rest-api la session est perdue et une requête de polling en recrée une vide, muette** : le
+  chien de garde compare le nombre d'abonnements à chaque cycle.
+- Rôles (STATE_ROLES, `@iobroker/type-detector`) : `switch.lock` vrai = **déverrouillé** ; `sensor.window`/`door`
+  vrai = ouvert ; Homematic `value.window` nombre 0 fermé / 1 basculé / 2 ouvert ; `level.blind` max = ouvert ;
+  `value.power.consumption` est une énergie (Wh). `common.write` vaut true par défaut dans ioBroker, mais le pont
+  n'écrit que si l'objet dit explicitement `write: true` (consigne). hm-rpc nomme ses états
+  `<appareil>:<canal>.<point>` : le préfixe de l'appareil est retiré du nom de la fonctionnalité.
+- Choix de conception : un appareil Gladys par objet `device`, sinon `channel`, sinon l'état seul ; identifiants
+  tirés des ids ioBroker ; états de `system.*` et des canaux `<adaptateur>.<n>.info` jamais importés ; textes non
+  importés (déclencheur et action de scène pour eux) ; serrures, portails, portes de garage et alarmes (par rôle,
+  et par nom pour les simples relais) en lecture seule sauf option, y compris par l'action de scène.
+- Relecture indépendante du 20/10 (corrigée) : la sécurité teste l'état **et tous ses ancêtres** (canaux, device, noms
+  dans toutes les langues), relus par `GET /v1/object` pour l'action de scène ; les canaux et devices sont lus par
+  instance d'adaptateur (`hm-rpc.1.*`) quels que soient les motifs, sinon l'identifiant externe changerait avec
+  `paths` ; une valeur `ack: false` (commande pas encore exécutée) n'est jamais publiée, sauf sous `0_userdata` et
+  `javascript` qu'aucun adaptateur n'acquitte ; motifs sensibles à la casse comme rest-api ; chaque session s'abonne
+  aussi à `system.gladys-bridge-watchdog` (ne correspond à rien) pour que le chien de garde voie une session perdue
+  même sans état suivi. Une session abandonnée (remplacée) est détruite par le ramasse-miettes de rest-api après
+  1,5 × timeout sans requête : pas de désabonnement explicite.

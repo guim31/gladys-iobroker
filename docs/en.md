@@ -1,61 +1,145 @@
-# Demo Devices Template
+# ioBroker bridge
 
-This is the user documentation of the integration. Gladys re-hosts this file
-and shows a permanent **Documentation** link to it in the Configuration screen
-(in the user's language, with English as the fallback) — it is when
-configuring that the user needs it most. Keep the short onboarding hints in
-the `section` blocks of the manifest `config_schema`; put the long
-step-by-step (screenshots, troubleshooting…) here.
+This integration brings the states of your [ioBroker](https://www.iobroker.net) into Gladys: lights,
+plugs, shutters, thermostats, sensors and detectors become Gladys devices, followed live and
+controllable. Handy to move to Gladys step by step, or to run both side by side.
 
-## What you get
+Tested against a real ioBroker (js-controller 7.2, rest-api adapter 4.0) in Docker, with Homematic IP,
+Shelly and Zigbee objects reproduced from their adapters. Not affiliated with ioBroker.
 
-Six demo devices show up after installation: a weather station (real data
-from Open-Meteo), a switch, a dimmable light, a smart plug with power
-metering, a motion sensor and a camera.
+## Prerequisites
+
+- An ioBroker reachable from the Gladys machine.
+- The **REST API** adapter (`rest-api`) installed in ioBroker, with an instance (Adapters → search
+  "REST API" → install, then keep the default port **8093**). The older `simple-api` adapter is not
+  used.
+- Optional: if you tick **Authentication** in the rest-api instance, an ioBroker user for Gladys. A
+  dedicated user with read rights, plus write rights on what Gladys should control, is the safest.
 
 ## Configuration
 
-1. Open the **Configuration** tab of the integration.
-2. Set the **latitude** and **longitude** the demo weather station should
-   observe (they default to Paris), and pick your temperature unit.
-   The **refresh interval** sets how often the weather station and the
-   plug's power are read: every 5 minutes by default, every minute at most.
-3. Save: the devices appear in the **Discovery** tab, ready to be added.
+### Address and user
 
-The **Prefer the local connection** toggle drives the demo plug: it reports
-the channel it actually uses as a badge (local or cloud), with an orange dot
-when it runs degraded (local refused, cloud fallback).
+- **Address of the rest-api adapter**: the IP address of ioBroker and the port of the adapter, for
+  example `http://192.168.1.40:8093` (`192.168.1.40` alone gets port 8093). Not a `.local` name, not
+  `localhost`: the integration runs in its own container.
+- **User name** and **Password**: only when authentication is ticked in the rest-api instance. Wrong
+  credentials show "Access refused" in the configuration screen.
 
-## Actions
+Then use **Test the connection**: it gives the ioBroker version, the number of devices offered, and
+the roles that were not imported, with their count.
 
-- **Test the weather provider** — performs a live request to Open-Meteo and
-  shows the current temperature and humidity under the button.
-- **Identify a device** — pick one of your devices in the list and it will
-  signal itself (the demo light "blinks" in the logs).
+### Choosing what is imported
 
-## Scenes
+By default every state that Gladys can show is offered in the **Discovery** tab. On a large
+installation, narrow it:
 
-The integration adds its own cards to the scene editor (Gladys 5.1 or
-later), under the **Integrations** category:
+- **Only these ioBroker objects**: id patterns, separated by commas, `*` for any text, for example
+  `hm-rpc.0.*, shelly.0.*, 0_userdata.0.*`. Only these objects are read from ioBroker.
+- **Only the objects of these rooms**: rooms of ioBroker (`enum.rooms`), by name in any language or by
+  id, for example `Living room, Kitchen`.
+- **States to leave out**: id patterns never imported, for example `*.RSSI_*`.
 
-- **Motion detected** (trigger) — starts the scene when a demo motion sensor
-  sees something move. Optionally pick the sensor and what moved (person,
-  animal); left empty, any detection matches. The following actions can
-  read what moved with `{{triggerEvent.data.target}}`.
-- **Identify a device** (action) — makes the chosen device signal itself.
-  It returns whether the device could signal itself, so the following
-  actions can depend on it.
+The states of ioBroker itself (`system.*`, the `info` channel of every adapter) are never imported.
 
-## Dashboard
+### Locks, gates, garage doors and alarms
 
-Add the **Demo status** widget to a dashboard: it shows the live
-temperature of the weather station and the power of the office plug, the
-connection the plug currently uses (orange when degraded) and the observed
-location. Its **Identify the light** button makes the demo light signal
-itself.
+They are **read-only by default**: Gladys shows their state, but cannot open, unlock or disarm them,
+neither from the device, nor from a scene, nor from a voice assistant. They are recognised by their
+role (`switch.lock`, `switch.gate`, `button.open.door`, alarm roles) and, for plain relays, by their
+name or id (garage, gate, lock, alarm, Garagentor, portail…). Tick **Allow commands of locks, gates,
+garage doors and alarms** only if you accept it.
+
+### Options
+
+- **Minimum interval between two values of a sensor**: a power meter that reports every second is
+  sent to Gladys at most at this pace (10 s by default). Switches, lights and detectors are never
+  delayed.
+- **States watched for the scenes**: state ids (`*` allowed) that start the scene trigger, even when
+  they are not added to Gladys.
+- **Language of the feature names**: French by default.
+
+## What you get
+
+### Devices
+
+One Gladys device per ioBroker **device** (for example a Homematic IP actuator with all its channels),
+else per **channel**, else per state of its own (a `0_userdata` state). Its room, when it has one, is
+added to its name. The features come from the **role** of each state:
+
+| ioBroker role                                                   | Gladys feature                           |
+| --------------------------------------------------------------- | ---------------------------------------- |
+| `switch`, `switch.power`, `switch.light`, writable `state`      | switch or light on/off                   |
+| `level.dimmer`, `level.brightness`                              | light brightness (and on/off when alone) |
+| `level.color.rgb`                                               | light colour                             |
+| `level.blind`, `value.blind`                                    | shutter position, open/close/stop        |
+| `level.temperature`                                             | thermostat setpoint                      |
+| `value.temperature`, `value.humidity`, `value.pressure`         | temperature, humidity, pressure          |
+| `value.brightness`, `value.co2`, `value.uv`, `value.speed.wind` | light, CO2, UV, wind speed               |
+| `value.power`, `value.energy`, `value.power.consumption`        | power (W), energy index (Wh, kWh)        |
+| `value.voltage`, `value.current`, `value.battery`               | voltage, current, battery                |
+| `sensor.window`, `sensor.door`, `value.window`                  | opening sensor                           |
+| `sensor.motion`, `sensor.presence`                              | motion, presence                         |
+| `sensor.alarm.flood`, `sensor.alarm.fire`, `indicator.lowbat`   | leak, smoke, low battery                 |
+| `switch.lock`                                                   | lock (read-only unless allowed)          |
+| `value`, `level` with a known unit (°C, W, kWh, hPa, lx…)       | the sensor of that unit                  |
+
+A state is controllable only when its object says `write: true`. Commands are sent like the ioBroker
+interface does (`ack: false`): the adapter of the device carries them out, and the value it confirms is
+shown in Gladys. Only the states of the devices added to Gladys are followed. The states of `0_userdata` and `javascript`, which no adapter confirms, are shown as soon as they are written. Id patterns are case-sensitive, like ioBroker ids.
+
+### Dashboard widget
+
+**ioBroker** shows the connection, how the values arrive (live or polling), the ioBroker version, the
+devices offered and added and the states followed. Its **Reload** button reads the objects again.
+
+### Scene triggers
+
+**ioBroker state changed** starts a scene when a watched state (configuration) changes value. Filters:
+the state id, and optionally the new value. Variables: `id`, `name`, `value`, `old_value`.
+
+### Scene actions
+
+**Set an ioBroker state** writes a value to any state, added to Gladys or not: `true`, `false`, `50`,
+`19,5`, a text. The value is converted to the type of the state. Read-only states (`write: false`) and,
+unless allowed, the security states are refused.
+
+## Scene examples
+
+- **Good night**: at 23:00, set `0_userdata.0.good_night` to `true` to start your ioBroker script that
+  closes the shutters, while Gladys turns off its own lights.
+- **Washing machine done**: when the power of the Homematic plug stays below 5 W, Gladys sends you a
+  message.
+- **Doorbell**: watch `0_userdata.0.doorbell`; when it changes to `true`, Gladys plays a sound and
+  shows the camera.
 
 ## Troubleshooting
 
-The integration logs everything it does: check the integration logs from the
-Gladys UI (or `docker logs` on the host) with `LOG_LEVEL=debug` for the full
-detail.
+- **Unreachable**: check the address and the port (8093), that the rest-api instance is running (green
+  in ioBroker), and that the Gladys machine can reach it.
+- **Access refused**: authentication is ticked in the rest-api instance: fill in the user name and
+  password, and check the rights of that user.
+- **A device is missing**: use **Test the connection** to see the roles not imported. Give the state a
+  standard role in ioBroker (object → edit → role), or use the scene action for it.
+- **Values arrive late**: the widget says "Polling" when long polling of rest-api does not work (a
+  proxy in between): states are then read every 30 seconds.
+- More details in the logs of the integration, with `LOG_LEVEL=debug`.
+
+## Limits
+
+- ioBroker does not push values: rest-api is followed by long polling, one change per request, and the
+  followed states are read again every 5 minutes, which also catches a change rest-api could not
+  deliver.
+- The role of a state decides everything: a state with a generic role (`state`, `value` without unit)
+  or a text is not imported (scene trigger and action for it). Colour temperature, hue and tilt are not
+  imported.
+- `switch.lock`: true means unlocked in ioBroker (STATE_ROLES), shown as "unlocked" in Gladys.
+- `level.blind` is taken as ioBroker defines it (maximum = open); an adapter that inverts it shows an
+  inverted position.
+- The feature names are those of ioBroker when the device is added; renaming in ioBroker later does not
+  rename them in Gladys.
+
+## Privacy
+
+Everything stays on your network: Gladys talks to the rest-api adapter only. The password is stored in
+the Gladys configuration and never written to the logs.

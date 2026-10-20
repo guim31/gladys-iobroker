@@ -1,0 +1,1476 @@
+{
+  "source": "ioBroker js-controller (buanet/iobroker:latest) + rest-api 4.0.3, GET /v1/objects?filter=*&type=…, metadata (from, user, ts, acl) removed",
+  "states": {
+    "0_userdata.0.example_state": {
+      "_id": "0_userdata.0.example_state",
+      "type": "state",
+      "common": {
+        "name": "Example state",
+        "role": "indicator",
+        "def": false,
+        "type": "boolean"
+      },
+      "enums": {}
+    },
+    "system.adapter.admin.0.alive": {
+      "_id": "system.adapter.admin.0.alive",
+      "type": "state",
+      "common": {
+        "name": "admin.0 alive",
+        "type": "boolean",
+        "read": true,
+        "write": true,
+        "role": "indicator.state"
+      },
+      "native": {},
+      "enums": {}
+    },
+    "admin.0.info.connection": {
+      "_id": "admin.0.info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": {
+          "en": "HTTP server started",
+          "de": "HTTP-Server gestartet",
+          "ru": "HTTP-сервер запущен",
+          "pt": "Servidor HTTP iniciado",
+          "nl": "HTTP-server gestart",
+          "fr": "Serveur HTTP démarré",
+          "it": "Server HTTP avviato",
+          "es": "Servidor HTTP iniciado",
+          "pl": "Uruchomiono serwer HTTP",
+          "uk": "HTTP-сервер запущено",
+          "zh-cn": "HTTP 服务器已启动"
+        },
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {},
+      "enums": {}
+    },
+    "0_userdata.0.livingroom.light.on": {
+      "type": "state",
+      "common": {
+        "name": "Power",
+        "type": "boolean",
+        "role": "switch.light",
+        "read": true,
+        "write": true,
+        "def": false
+      },
+      "native": {},
+      "_id": "0_userdata.0.livingroom.light.on",
+      "enums": {
+        "enum.rooms.living_room": {
+          "en": "Living room",
+          "de": "Wohnzimmer"
+        }
+      }
+    },
+    "0_userdata.0.livingroom.light.level": {
+      "type": "state",
+      "common": {
+        "name": "Brightness",
+        "type": "number",
+        "role": "level.dimmer",
+        "unit": "%",
+        "min": 0,
+        "max": 100,
+        "read": true,
+        "write": true,
+        "def": 0
+      },
+      "native": {},
+      "_id": "0_userdata.0.livingroom.light.level",
+      "enums": {
+        "enum.rooms.living_room": {
+          "en": "Living room",
+          "de": "Wohnzimmer"
+        }
+      }
+    },
+    "0_userdata.0.climate.temperature": {
+      "type": "state",
+      "common": {
+        "name": "Temperature",
+        "type": "number",
+        "role": "value.temperature",
+        "unit": "°C",
+        "read": true,
+        "write": false
+      },
+      "native": {},
+      "_id": "0_userdata.0.climate.temperature",
+      "enums": {
+        "enum.rooms.living_room": {
+          "en": "Living room",
+          "de": "Wohnzimmer"
+        }
+      }
+    },
+    "0_userdata.0.climate.humidity": {
+      "type": "state",
+      "common": {
+        "name": "Humidity",
+        "type": "number",
+        "role": "value.humidity",
+        "unit": "%",
+        "read": true,
+        "write": false
+      },
+      "native": {},
+      "_id": "0_userdata.0.climate.humidity",
+      "enums": {
+        "enum.rooms.living_room": {
+          "en": "Living room",
+          "de": "Wohnzimmer"
+        }
+      }
+    },
+    "0_userdata.0.window": {
+      "type": "state",
+      "common": {
+        "name": "Kitchen window",
+        "type": "boolean",
+        "role": "sensor.window",
+        "read": true,
+        "write": false
+      },
+      "native": {},
+      "_id": "0_userdata.0.window",
+      "enums": {}
+    },
+    "0_userdata.0.plug": {
+      "type": "state",
+      "common": {
+        "name": {
+          "en": "Coffee plug",
+          "de": "Kaffee Steckdose"
+        },
+        "type": "boolean",
+        "role": "switch",
+        "read": true,
+        "write": true
+      },
+      "native": {},
+      "_id": "0_userdata.0.plug",
+      "enums": {}
+    },
+    "0_userdata.0.thermostat": {
+      "type": "state",
+      "common": {
+        "name": "Setpoint",
+        "type": "number",
+        "role": "level.temperature",
+        "unit": "°C",
+        "min": 5,
+        "max": 30,
+        "read": true,
+        "write": true
+      },
+      "native": {},
+      "_id": "0_userdata.0.thermostat",
+      "enums": {}
+    },
+    "0_userdata.0.lock": {
+      "type": "state",
+      "common": {
+        "name": "Front door lock",
+        "type": "boolean",
+        "role": "switch.lock",
+        "read": true,
+        "write": true
+      },
+      "native": {},
+      "_id": "0_userdata.0.lock",
+      "enums": {}
+    },
+    "0_userdata.0.blind": {
+      "type": "state",
+      "common": {
+        "name": "Bedroom blind",
+        "type": "number",
+        "role": "level.blind",
+        "unit": "%",
+        "min": 0,
+        "max": 100,
+        "read": true,
+        "write": true
+      },
+      "native": {},
+      "_id": "0_userdata.0.blind",
+      "enums": {}
+    },
+    "0_userdata.0.power": {
+      "type": "state",
+      "common": {
+        "name": "Washing machine power",
+        "type": "number",
+        "role": "value.power",
+        "unit": "W",
+        "read": true,
+        "write": false
+      },
+      "native": {},
+      "_id": "0_userdata.0.power",
+      "enums": {}
+    },
+    "0_userdata.0.energy": {
+      "type": "state",
+      "common": {
+        "name": "Meter",
+        "type": "number",
+        "role": "value.energy",
+        "unit": "kWh",
+        "read": true,
+        "write": false
+      },
+      "native": {},
+      "_id": "0_userdata.0.energy",
+      "enums": {}
+    },
+    "0_userdata.0.motion": {
+      "type": "state",
+      "common": {
+        "name": "Hall motion",
+        "type": "boolean",
+        "role": "sensor.motion",
+        "read": true,
+        "write": false
+      },
+      "native": {},
+      "_id": "0_userdata.0.motion",
+      "enums": {}
+    },
+    "hm-rpc.1.00111A2B3C4D5E.0.LOW_BAT": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Bedroom shutter:0.LOW_BAT",
+        "type": "boolean",
+        "role": "indicator.lowbat",
+        "write": false
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00111A2B3C4D5E.0.LOW_BAT",
+      "enums": {
+        "enum.rooms.bedroom": {
+          "en": "Bedroom",
+          "de": "Schlafzimmer",
+          "fr": "Chambre"
+        }
+      }
+    },
+    "hm-rpc.1.00111A2B3C4D5E.0.UNREACH": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Bedroom shutter:0.UNREACH",
+        "type": "boolean",
+        "role": "indicator.unreach",
+        "write": false
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00111A2B3C4D5E.0.UNREACH",
+      "enums": {
+        "enum.rooms.bedroom": {
+          "en": "Bedroom",
+          "de": "Schlafzimmer",
+          "fr": "Chambre"
+        }
+      }
+    },
+    "hm-rpc.1.00111A2B3C4D5E.0.RSSI_DEVICE": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Bedroom shutter:0.RSSI_DEVICE",
+        "type": "number",
+        "role": "value.rssi",
+        "write": false,
+        "unit": "dBm"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00111A2B3C4D5E.0.RSSI_DEVICE",
+      "enums": {
+        "enum.rooms.bedroom": {
+          "en": "Bedroom",
+          "de": "Schlafzimmer",
+          "fr": "Chambre"
+        }
+      }
+    },
+    "hm-rpc.1.00111A2B3C4D5E.4.LEVEL": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Bedroom shutter:4.LEVEL",
+        "type": "number",
+        "role": "level.blind",
+        "write": true,
+        "unit": "%",
+        "min": 0,
+        "max": 100
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00111A2B3C4D5E.4.LEVEL",
+      "enums": {
+        "enum.rooms.bedroom": {
+          "en": "Bedroom",
+          "de": "Schlafzimmer",
+          "fr": "Chambre"
+        }
+      }
+    },
+    "hm-rpc.1.00111A2B3C4D5E.4.STOP": {
+      "type": "state",
+      "common": {
+        "read": false,
+        "name": "Bedroom shutter:4.STOP",
+        "type": "boolean",
+        "role": "button.stop.blind",
+        "write": true
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00111A2B3C4D5E.4.STOP",
+      "enums": {
+        "enum.rooms.bedroom": {
+          "en": "Bedroom",
+          "de": "Schlafzimmer",
+          "fr": "Chambre"
+        }
+      }
+    },
+    "hm-rpc.1.00111A2B3C4D5E.4.ACTIVITY_STATE": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Bedroom shutter:4.ACTIVITY_STATE",
+        "type": "number",
+        "role": "value",
+        "write": false,
+        "states": {
+          "0": "UNKNOWN",
+          "1": "UP",
+          "2": "DOWN",
+          "3": "STABLE"
+        }
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00111A2B3C4D5E.4.ACTIVITY_STATE",
+      "enums": {
+        "enum.rooms.bedroom": {
+          "en": "Bedroom",
+          "de": "Schlafzimmer",
+          "fr": "Chambre"
+        }
+      }
+    },
+    "hm-rpc.1.00021B3C4D5E6F.3.STATE": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Washing machine plug:3.STATE",
+        "type": "boolean",
+        "role": "switch",
+        "write": true
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00021B3C4D5E6F.3.STATE",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.00021B3C4D5E6F.6.POWER": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Washing machine plug:6.POWER",
+        "type": "number",
+        "role": "value.power",
+        "write": false,
+        "unit": "W"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00021B3C4D5E6F.6.POWER",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.00021B3C4D5E6F.6.ENERGY_COUNTER": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Washing machine plug:6.ENERGY_COUNTER",
+        "type": "number",
+        "role": "value.power.consumption",
+        "write": false,
+        "unit": "Wh"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00021B3C4D5E6F.6.ENERGY_COUNTER",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.00021B3C4D5E6F.6.VOLTAGE": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Washing machine plug:6.VOLTAGE",
+        "type": "number",
+        "role": "value.voltage",
+        "write": false,
+        "unit": "V"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00021B3C4D5E6F.6.VOLTAGE",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.0007DA5B6C7D8E.1.STATE": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Kitchen window:1.STATE",
+        "type": "number",
+        "role": "value.window",
+        "write": false,
+        "states": {
+          "0": "CLOSED",
+          "1": "TILTED",
+          "2": "OPEN"
+        }
+      },
+      "native": {},
+      "_id": "hm-rpc.1.0007DA5B6C7D8E.1.STATE",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.000A18A9B8C7D6.1.ACTUAL_TEMPERATURE": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Office radiator:1.ACTUAL_TEMPERATURE",
+        "type": "number",
+        "role": "value.temperature",
+        "write": false,
+        "unit": "°C",
+        "min": -3276.8,
+        "max": 3276.7
+      },
+      "native": {},
+      "_id": "hm-rpc.1.000A18A9B8C7D6.1.ACTUAL_TEMPERATURE",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "hm-rpc.1.000A18A9B8C7D6.1.SET_POINT_TEMPERATURE": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Office radiator:1.SET_POINT_TEMPERATURE",
+        "type": "number",
+        "role": "level.temperature",
+        "write": true,
+        "unit": "°C",
+        "min": 4.5,
+        "max": 30.5
+      },
+      "native": {},
+      "_id": "hm-rpc.1.000A18A9B8C7D6.1.SET_POINT_TEMPERATURE",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "hm-rpc.1.000A18A9B8C7D6.1.LEVEL": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Office radiator:1.LEVEL",
+        "type": "number",
+        "role": "value.valve",
+        "write": false,
+        "unit": "%",
+        "min": 0,
+        "max": 100
+      },
+      "native": {},
+      "_id": "hm-rpc.1.000A18A9B8C7D6.1.LEVEL",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Switch": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Switch",
+        "type": "boolean",
+        "role": "switch",
+        "write": true
+      },
+      "native": {},
+      "_id": "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Switch",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Power": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Power",
+        "type": "number",
+        "role": "value.power",
+        "write": false,
+        "unit": "W"
+      },
+      "native": {},
+      "_id": "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Power",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Energy": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Energy",
+        "type": "number",
+        "role": "value.power.consumption",
+        "write": false,
+        "unit": "Wh"
+      },
+      "native": {},
+      "_id": "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Energy",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Temperature": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Temperature",
+        "type": "number",
+        "role": "value.temperature",
+        "write": false,
+        "unit": "°C"
+      },
+      "native": {},
+      "_id": "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Temperature",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.online": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Device online",
+        "type": "boolean",
+        "role": "indicator.reachable",
+        "write": false
+      },
+      "native": {},
+      "_id": "shelly.0.shellyplus1pm#a8032ab1c2d3#1.online",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "zigbee.0.00158d0001a2b3c4.temperature": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Temperature",
+        "type": "number",
+        "role": "value.temperature",
+        "write": false,
+        "unit": "°C"
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0001a2b3c4.temperature",
+      "enums": {
+        "enum.rooms.bathroom": {
+          "en": "Bathroom",
+          "de": "Bad",
+          "fr": "Salle de bain"
+        }
+      }
+    },
+    "zigbee.0.00158d0001a2b3c4.humidity": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Humidity",
+        "type": "number",
+        "role": "value.humidity",
+        "write": false,
+        "unit": "%",
+        "min": 0,
+        "max": 100
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0001a2b3c4.humidity",
+      "enums": {
+        "enum.rooms.bathroom": {
+          "en": "Bathroom",
+          "de": "Bad",
+          "fr": "Salle de bain"
+        }
+      }
+    },
+    "zigbee.0.00158d0001a2b3c4.pressure": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Pressure",
+        "type": "number",
+        "role": "value.pressure",
+        "write": false,
+        "unit": "hPa"
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0001a2b3c4.pressure",
+      "enums": {
+        "enum.rooms.bathroom": {
+          "en": "Bathroom",
+          "de": "Bad",
+          "fr": "Salle de bain"
+        }
+      }
+    },
+    "zigbee.0.00158d0001a2b3c4.battery": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Battery percent",
+        "type": "number",
+        "role": "value.battery",
+        "write": false,
+        "unit": "%",
+        "min": 0,
+        "max": 100
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0001a2b3c4.battery",
+      "enums": {
+        "enum.rooms.bathroom": {
+          "en": "Bathroom",
+          "de": "Bad",
+          "fr": "Salle de bain"
+        }
+      }
+    },
+    "zigbee.0.00158d0001a2b3c4.link_quality": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Link quality",
+        "type": "number",
+        "role": "state",
+        "write": false,
+        "min": 0,
+        "max": 255
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0001a2b3c4.link_quality",
+      "enums": {
+        "enum.rooms.bathroom": {
+          "en": "Bathroom",
+          "de": "Bad",
+          "fr": "Salle de bain"
+        }
+      }
+    },
+    "zigbee.0.0017880104a5b6c7.state": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Switch state",
+        "type": "boolean",
+        "role": "switch",
+        "write": true
+      },
+      "native": {},
+      "_id": "zigbee.0.0017880104a5b6c7.state",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    },
+    "zigbee.0.0017880104a5b6c7.brightness": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Brightness",
+        "type": "number",
+        "role": "level.dimmer",
+        "write": true,
+        "unit": "%",
+        "min": 0,
+        "max": 100
+      },
+      "native": {},
+      "_id": "zigbee.0.0017880104a5b6c7.brightness",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    },
+    "zigbee.0.0017880104a5b6c7.color": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Color",
+        "type": "string",
+        "role": "level.color.rgb",
+        "write": true
+      },
+      "native": {},
+      "_id": "zigbee.0.0017880104a5b6c7.color",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    },
+    "zigbee.0.0017880104a5b6c7.colortemp": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Color temperature",
+        "type": "number",
+        "role": "level.color.temperature",
+        "write": true,
+        "unit": "mired",
+        "min": 153,
+        "max": 500
+      },
+      "native": {},
+      "_id": "zigbee.0.0017880104a5b6c7.colortemp",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    },
+    "zigbee.0.00158d0002c3d4e5.occupancy": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Occupancy",
+        "type": "boolean",
+        "role": "sensor.motion",
+        "write": false
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0002c3d4e5.occupancy",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    },
+    "zigbee.0.00158d0002c3d4e5.illuminance": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Illuminance",
+        "type": "number",
+        "role": "value.brightness",
+        "write": false,
+        "unit": "lux"
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0002c3d4e5.illuminance",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    },
+    "zigbee.0.00158d0003d4e5f6.opened": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Is open",
+        "type": "boolean",
+        "role": "sensor.door",
+        "write": false
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0003d4e5f6.opened",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    },
+    "0_userdata.0.garage.relay": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Garage door relay",
+        "type": "boolean",
+        "role": "switch",
+        "write": true
+      },
+      "native": {},
+      "_id": "0_userdata.0.garage.relay",
+      "enums": {}
+    },
+    "0_userdata.0.alarm_mode": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Alarm mode",
+        "type": "string",
+        "role": "text",
+        "write": true
+      },
+      "native": {},
+      "_id": "0_userdata.0.alarm_mode",
+      "enums": {}
+    },
+    "0_userdata.0.good_night": {
+      "type": "state",
+      "common": {
+        "read": true,
+        "name": "Good night script",
+        "type": "boolean",
+        "role": "switch",
+        "write": true
+      },
+      "native": {},
+      "_id": "0_userdata.0.good_night",
+      "enums": {}
+    }
+  },
+  "channels": {
+    "0_userdata.0.livingroom.light": {
+      "type": "channel",
+      "common": {
+        "name": "Ceiling lamp",
+        "role": "light.dimmer"
+      },
+      "native": {},
+      "_id": "0_userdata.0.livingroom.light",
+      "enums": {
+        "enum.rooms.living_room": {
+          "en": "Living room",
+          "de": "Wohnzimmer"
+        }
+      }
+    },
+    "0_userdata.0.climate": {
+      "type": "channel",
+      "common": {
+        "name": "Climate sensor"
+      },
+      "native": {},
+      "_id": "0_userdata.0.climate",
+      "enums": {
+        "enum.rooms.living_room": {
+          "en": "Living room",
+          "de": "Wohnzimmer"
+        }
+      }
+    },
+    "hm-rpc.1.00111A2B3C4D5E.0": {
+      "type": "channel",
+      "common": {
+        "name": "Bedroom shutter:0"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00111A2B3C4D5E.0",
+      "enums": {
+        "enum.rooms.bedroom": {
+          "en": "Bedroom",
+          "de": "Schlafzimmer",
+          "fr": "Chambre"
+        }
+      }
+    },
+    "hm-rpc.1.00111A2B3C4D5E.4": {
+      "type": "channel",
+      "common": {
+        "name": "Bedroom shutter:4",
+        "role": "blind"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00111A2B3C4D5E.4",
+      "enums": {
+        "enum.rooms.bedroom": {
+          "en": "Bedroom",
+          "de": "Schlafzimmer",
+          "fr": "Chambre"
+        }
+      }
+    },
+    "hm-rpc.1.00021B3C4D5E6F.3": {
+      "type": "channel",
+      "common": {
+        "name": "Washing machine plug:3",
+        "role": "switch"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00021B3C4D5E6F.3",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.00021B3C4D5E6F.6": {
+      "type": "channel",
+      "common": {
+        "name": "Washing machine plug:6",
+        "role": "value.power"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00021B3C4D5E6F.6",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.0007DA5B6C7D8E.1": {
+      "type": "channel",
+      "common": {
+        "name": "Kitchen window:1",
+        "role": "sensor.window"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.0007DA5B6C7D8E.1",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.000A18A9B8C7D6.1": {
+      "type": "channel",
+      "common": {
+        "name": "Office radiator:1",
+        "role": "thermostat"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.000A18A9B8C7D6.1",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0": {
+      "type": "channel",
+      "common": {
+        "name": "Relay 0"
+      },
+      "native": {},
+      "_id": "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "0_userdata.0.garage": {
+      "type": "channel",
+      "common": {
+        "name": "Garage door"
+      },
+      "native": {},
+      "_id": "0_userdata.0.garage",
+      "enums": {}
+    }
+  },
+  "devices": {
+    "0_userdata.0.livingroom": {
+      "type": "device",
+      "common": {
+        "name": "Living room lamp"
+      },
+      "native": {},
+      "_id": "0_userdata.0.livingroom",
+      "enums": {
+        "enum.rooms.living_room": {
+          "en": "Living room",
+          "de": "Wohnzimmer"
+        }
+      }
+    },
+    "hm-rpc.1.00111A2B3C4D5E": {
+      "type": "device",
+      "common": {
+        "name": "Bedroom shutter",
+        "icon": "broll.png"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00111A2B3C4D5E",
+      "enums": {
+        "enum.rooms.bedroom": {
+          "en": "Bedroom",
+          "de": "Schlafzimmer",
+          "fr": "Chambre"
+        }
+      }
+    },
+    "hm-rpc.1.00021B3C4D5E6F": {
+      "type": "device",
+      "common": {
+        "name": "Washing machine plug"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.00021B3C4D5E6F",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.0007DA5B6C7D8E": {
+      "type": "device",
+      "common": {
+        "name": "Kitchen window"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.0007DA5B6C7D8E",
+      "enums": {
+        "enum.rooms.kitchen": {
+          "en": "Kitchen",
+          "de": "Küche",
+          "fr": "Cuisine"
+        }
+      }
+    },
+    "hm-rpc.1.000A18A9B8C7D6": {
+      "type": "device",
+      "common": {
+        "name": "Office radiator"
+      },
+      "native": {},
+      "_id": "hm-rpc.1.000A18A9B8C7D6",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1": {
+      "type": "device",
+      "common": {
+        "name": "shellyplus1pm#a8032ab1c2d3#1"
+      },
+      "native": {},
+      "_id": "shelly.0.shellyplus1pm#a8032ab1c2d3#1",
+      "enums": {
+        "enum.rooms.office": {
+          "en": "Office",
+          "de": "Büro",
+          "fr": "Bureau"
+        }
+      }
+    },
+    "zigbee.0.00158d0001a2b3c4": {
+      "type": "device",
+      "common": {
+        "name": "Bathroom climate",
+        "type": "WSDCGQ11LM"
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0001a2b3c4",
+      "enums": {
+        "enum.rooms.bathroom": {
+          "en": "Bathroom",
+          "de": "Bad",
+          "fr": "Salle de bain"
+        }
+      }
+    },
+    "zigbee.0.0017880104a5b6c7": {
+      "type": "device",
+      "common": {
+        "name": "Hall bulb",
+        "type": "LCT015"
+      },
+      "native": {},
+      "_id": "zigbee.0.0017880104a5b6c7",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    },
+    "zigbee.0.00158d0002c3d4e5": {
+      "type": "device",
+      "common": {
+        "name": "Hall motion sensor",
+        "type": "RTCGQ11LM"
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0002c3d4e5",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    },
+    "zigbee.0.00158d0003d4e5f6": {
+      "type": "device",
+      "common": {
+        "name": "Front door contact",
+        "type": "MCCGQ11LM"
+      },
+      "native": {},
+      "_id": "zigbee.0.00158d0003d4e5f6",
+      "enums": {
+        "enum.rooms.hall": {
+          "en": "Hall",
+          "de": "Flur",
+          "fr": "Entrée"
+        }
+      }
+    }
+  },
+  "values": {
+    "system.adapter.admin.0.alive": {
+      "val": true,
+      "ack": true,
+      "q": 0
+    },
+    "admin.0.info.connection": {
+      "val": true,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.livingroom.light.on": {
+      "val": false,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.livingroom.light.level": {
+      "val": 40,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.climate.temperature": {
+      "val": 24,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.climate.humidity": {
+      "val": 48,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.window": {
+      "val": true,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.plug": {
+      "val": true,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.thermostat": {
+      "val": 20,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.lock": {
+      "val": true,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.blind": {
+      "val": 30,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.power": {
+      "val": 1200.5,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.energy": {
+      "val": 1234.56,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.motion": {
+      "val": false,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.00111A2B3C4D5E.0.LOW_BAT": {
+      "val": false,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.00111A2B3C4D5E.0.UNREACH": {
+      "val": false,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.00111A2B3C4D5E.0.RSSI_DEVICE": {
+      "val": -62,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.00111A2B3C4D5E.4.LEVEL": {
+      "val": 100,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.00111A2B3C4D5E.4.ACTIVITY_STATE": {
+      "val": 3,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.00021B3C4D5E6F.3.STATE": {
+      "val": true,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.00021B3C4D5E6F.6.POWER": {
+      "val": 1830.25,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.00021B3C4D5E6F.6.ENERGY_COUNTER": {
+      "val": 152340.1,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.00021B3C4D5E6F.6.VOLTAGE": {
+      "val": 231.4,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.0007DA5B6C7D8E.1.STATE": {
+      "val": 2,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.000A18A9B8C7D6.1.ACTUAL_TEMPERATURE": {
+      "val": 19.4,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.000A18A9B8C7D6.1.SET_POINT_TEMPERATURE": {
+      "val": 21,
+      "ack": true,
+      "q": 0
+    },
+    "hm-rpc.1.000A18A9B8C7D6.1.LEVEL": {
+      "val": 34,
+      "ack": true,
+      "q": 0
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Switch": {
+      "val": false,
+      "ack": true,
+      "q": 0
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Power": {
+      "val": 0,
+      "ack": true,
+      "q": 0
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Energy": {
+      "val": 8723.5,
+      "ack": true,
+      "q": 0
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.Relay0.Temperature": {
+      "val": 41.2,
+      "ack": true,
+      "q": 0
+    },
+    "shelly.0.shellyplus1pm#a8032ab1c2d3#1.online": {
+      "val": true,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.00158d0001a2b3c4.temperature": {
+      "val": 22.31,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.00158d0001a2b3c4.humidity": {
+      "val": 61.2,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.00158d0001a2b3c4.pressure": {
+      "val": 1012.4,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.00158d0001a2b3c4.battery": {
+      "val": 87,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.00158d0001a2b3c4.link_quality": {
+      "val": 120,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.0017880104a5b6c7.state": {
+      "val": true,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.0017880104a5b6c7.brightness": {
+      "val": 80,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.0017880104a5b6c7.color": {
+      "val": "#ff8000",
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.0017880104a5b6c7.colortemp": {
+      "val": 300,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.00158d0002c3d4e5.occupancy": {
+      "val": false,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.00158d0002c3d4e5.illuminance": {
+      "val": 34,
+      "ack": true,
+      "q": 0
+    },
+    "zigbee.0.00158d0003d4e5f6.opened": {
+      "val": false,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.garage.relay": {
+      "val": false,
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.alarm_mode": {
+      "val": "disarmed",
+      "ack": true,
+      "q": 0
+    },
+    "0_userdata.0.good_night": {
+      "val": false,
+      "ack": true,
+      "q": 0
+    }
+  },
+  "host": {
+    "system.host.iobroker": {
+      "type": "host",
+      "common": {
+        "name": "iobroker",
+        "installedVersion": "7.2.5"
+      }
+    }
+  }
+}
