@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-20
+
 ### Added
 
 - ioBroker bridge through the rest-api adapter: the states of ioBroker offered
@@ -30,3 +32,6 @@ the notes of the version's GitHub Release.
 - Scene trigger "ioBroker state changed" for the watched states, scene action
   "set an ioBroker state", dashboard widget, connection test.
 - English, French, German and Spanish.
+
+[Unreleased]: https://github.com/guim31/gladys-iobroker/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-iobroker/releases/tag/v1.0.0
