@@ -1,6 +1,6 @@
 {
   "name": "gladys-iobroker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Gladys Assistant external integration bridging ioBroker: import its states into Gladys and control them through the rest-api adapter.",
   "type": "module",
